@@ -10,7 +10,7 @@ export default async function Products({
   const category = params.category || "all";
   return (
     <div>
-      <ProductList category={category} />
+      <ProductList category={category} params="products" />
     </div>
   );
 }

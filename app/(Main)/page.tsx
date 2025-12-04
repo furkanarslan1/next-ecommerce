@@ -11,7 +11,7 @@ export default async function Home({
   return (
     <div>
       <Hero />
-      <ProductList category={category} />
+      <ProductList category={category} params="home" />
     </div>
   );
 }
