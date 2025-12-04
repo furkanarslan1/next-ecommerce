@@ -1,5 +1,8 @@
 import { ProductType } from "@/types/productsType";
 import React from "react";
+import Categories from "./Categories";
+import ProductCard from "./ProductCard";
+import Link from "next/link";
 
 const products: ProductType[] = [
   {
@@ -13,12 +16,12 @@ const products: ProductType[] = [
     colors: ["gray", "purple", "green"],
     images: {
       gray: "/products/1g.png",
-      purple: "products/1p.png",
-      green: "products/1gre.png",
+      purple: "/products/1p.png",
+      green: "/products/1gre.png",
     },
   },
   {
-    id: 1,
+    id: 2,
     name: "Puma ",
     shortDescription: "Lorem ipsum dolor sit amet consectetur",
     description:
@@ -28,12 +31,12 @@ const products: ProductType[] = [
     colors: ["gray", "purple", "green"],
     images: {
       gray: "/products/1g.png",
-      purple: "products/1p.png",
-      green: "products/1gre.png",
+      purple: "/products/1p.png",
+      green: "/products/1gre.png",
     },
   },
   {
-    id: 1,
+    id: 3,
     name: "Nike ",
     shortDescription: "Lorem ipsum dolor sit amet consectetur",
     description:
@@ -42,13 +45,13 @@ const products: ProductType[] = [
     sizes: ["s", "m", "l", "xl", "xxl"],
     colors: ["gray", "green"],
     images: {
-      gray: "/products/3g.png",
+      gray: "/products/2g.png",
 
       green: "products/3gre.png",
     },
   },
   {
-    id: 1,
+    id: 4,
     name: "Adidas ",
     shortDescription: "Lorem ipsum dolor sit amet consectetur",
     description:
@@ -58,12 +61,12 @@ const products: ProductType[] = [
     colors: ["gray", "purple", "green"],
     images: {
       gray: "/products/1g.png",
-      purple: "products/1p.png",
-      green: "products/1gre.png",
+      purple: "/products/1p.png",
+      green: "/products/1gre.png",
     },
   },
   {
-    id: 1,
+    id: 5,
     name: "Adidas ",
     shortDescription: "Lorem ipsum dolor sit amet consectetur",
     description:
@@ -73,12 +76,27 @@ const products: ProductType[] = [
     colors: ["gray", "purple", "green"],
     images: {
       gray: "/products/1g.png",
-      purple: "products/1p.png",
-      green: "products/1gre.png",
+      purple: "/products/1p.png",
+      green: "/products/1gre.png",
     },
   },
 ];
 
-export default function ProductList() {
-  return <div>L</div>;
+export default function ProductList({ category }: { category: string }) {
+  return (
+    <div>
+      <Categories />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-12">
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+      <Link
+        href={category ? `/products/?category=${category}` : "/products"}
+        className="flex justify-end mt-4 underline text-sm text-gray-500"
+      >
+        View all products
+      </Link>
+    </div>
+  );
 }

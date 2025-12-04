@@ -1,7 +1,7 @@
 import ProductList from "@/components/ProductList";
-import Hero from "./_components/Hero";
+import React from "react";
 
-export default async function Home({
+export default async function Products({
   searchParams,
 }: {
   searchParams: Promise<{ category?: string }>;
@@ -10,7 +10,6 @@ export default async function Home({
   const category = params.category || "all";
   return (
     <div>
-      <Hero />
       <ProductList category={category} />
     </div>
   );
