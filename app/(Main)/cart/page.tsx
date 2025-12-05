@@ -1,6 +1,7 @@
 "use client";
 import PaymentForm from "@/components/PaymentForm";
 import ShippingForm from "@/components/ShippingForm";
+import useCartStore from "@/stores/cartStore";
 import { CartItemType } from "@/types/productsType";
 import { ShippingFormInputs } from "@/types/shippingFormSchema";
 import { ArrowRight, Trash2 } from "lucide-react";
@@ -23,71 +24,71 @@ const steps = [
   },
 ];
 
-const cartItems: CartItemType[] = [
-  {
-    id: 1,
-    name: "Adidas ",
-    shortDescription: "Lorem ipsum dolor sit amet consectetur",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
-    price: 49.9,
-    sizes: ["s", "m", "l", "xl", "xxl"],
-    colors: ["gray", "purple", "green"],
-    images: {
-      gray: "/products/1g.png",
-      purple: "/products/1p.png",
-      green: "/products/1gre.png",
-    },
-    quantity: 1,
-    selectedSize: "m",
-    selectedColor: "gray",
-  },
+// const cartItems: CartItemType[] = [
+//   {
+//     id: 1,
+//     name: "Adidas ",
+//     shortDescription: "Lorem ipsum dolor sit amet consectetur",
+//     description:
+//       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
+//     price: 49.9,
+//     sizes: ["s", "m", "l", "xl", "xxl"],
+//     colors: ["gray", "purple", "green"],
+//     images: {
+//       gray: "/products/1g.png",
+//       purple: "/products/1p.png",
+//       green: "/products/1gre.png",
+//     },
+//     quantity: 1,
+//     selectedSize: "m",
+//     selectedColor: "gray",
+//   },
 
-  {
-    id: 2,
-    name: "Puma ",
-    shortDescription: "Lorem ipsum dolor sit amet consectetur",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
-    price: 459.9,
-    sizes: ["s", "m", "l", "xl", "xxl"],
-    colors: ["gray", "purple", "green"],
-    images: {
-      gray: "/products/1g.png",
-      purple: "/products/1p.png",
-      green: "/products/1gre.png",
-    },
-    quantity: 1,
-    selectedSize: "m",
-    selectedColor: "gray",
-  },
-  {
-    id: 3,
-    name: "Nike ",
-    shortDescription: "Lorem ipsum dolor sit amet consectetur",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
-    price: 39.9,
-    sizes: ["s", "m", "l", "xl", "xxl"],
-    colors: ["gray", "green"],
-    images: {
-      gray: "/products/2g.png",
+//   {
+//     id: 2,
+//     name: "Puma ",
+//     shortDescription: "Lorem ipsum dolor sit amet consectetur",
+//     description:
+//       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
+//     price: 459.9,
+//     sizes: ["s", "m", "l", "xl", "xxl"],
+//     colors: ["gray", "purple", "green"],
+//     images: {
+//       gray: "/products/1g.png",
+//       purple: "/products/1p.png",
+//       green: "/products/1gre.png",
+//     },
+//     quantity: 1,
+//     selectedSize: "m",
+//     selectedColor: "gray",
+//   },
+//   {
+//     id: 3,
+//     name: "Nike ",
+//     shortDescription: "Lorem ipsum dolor sit amet consectetur",
+//     description:
+//       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit unde soluta modi debitis. Tempora nesciunt libero nobis sint omnis maxime laboriosam id, possimus architecto nihil cumque dicta qui! Quo, illum.",
+//     price: 39.9,
+//     sizes: ["s", "m", "l", "xl", "xxl"],
+//     colors: ["gray", "green"],
+//     images: {
+//       gray: "/products/2g.png",
 
-      green: "products/3gre.png",
-    },
-    quantity: 2,
-    selectedSize: "s",
-    selectedColor: "gray",
-  },
-];
+//       green: "products/3gre.png",
+//     },
+//     quantity: 2,
+//     selectedSize: "s",
+//     selectedColor: "gray",
+//   },
+// ];
 
 export default function Cart() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeStep = parseInt(searchParams.get("step") ?? "1");
-  const [shippingForm, setShippingForm] = useState<ShippingFormInputs | null>(
-    null
-  );
+  const [shippingForm, setShippingForm] = useState<ShippingFormInputs>();
+
+  const { cart, removeFromCart } = useCartStore();
 
   return (
     <div className="flex flex-col gap-8 items-center justify-center mt-12">
@@ -123,9 +124,12 @@ export default function Cart() {
         {/* STEPS */}
         <div className="w-full lg:w-7/12 shadow-lg border border-gray-100 p-8 rounded-lg flex flex-col gap-8">
           {activeStep === 1 ? (
-            cartItems.map((item) => (
+            cart.map((item) => (
               // SINGLE CART ITEM
-              <div className="flex items-center justify-between" key={item.id}>
+              <div
+                className="flex items-center justify-between"
+                key={item.id + item.selectedSize + item.selectedColor}
+              >
                 {/* IMAGE AND DETAILS */}
                 <div className="flex gap-8">
                   {/* IMAGE */}
@@ -155,7 +159,10 @@ export default function Cart() {
                   </div>
                 </div>
                 {/* DELETE BUTTON */}
-                <button className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 transition-all duration-300 text-red-600 flex items-center justify-center cursor-pointer">
+                <button
+                  onClick={() => removeFromCart(item)}
+                  className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 transition-all duration-300 text-red-600 flex items-center justify-center cursor-pointer"
+                >
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -178,7 +185,7 @@ export default function Cart() {
               <p className="text-gray-500">Subtotal</p>
               <p className="font-medium">
                 $
-                {cartItems
+                {cart
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toFixed(2)}
               </p>
@@ -196,7 +203,7 @@ export default function Cart() {
               <p className="text-gray-500">Total</p>
               <p className="font-semibold">
                 $
-                {cartItems
+                {cart
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toFixed(2)}
               </p>
